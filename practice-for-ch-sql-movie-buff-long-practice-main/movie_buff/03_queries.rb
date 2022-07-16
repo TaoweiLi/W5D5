@@ -5,6 +5,8 @@ def what_was_that_one_with(those_actors)
     .select("movies.title", "movies.id")
     .joins(:actors)
     .where("actors.name IN (?)", those_actors)
+    .group("movies.id")
+    .having("Count(actors.id) = ?", those_actors.length)
     # .pluck("actors.name")
 end
 
@@ -12,17 +14,49 @@ def golden_age
   # Find the decade with the highest average movie score.
   # HINT: Use a movie's year to derive its decade. Remember that you can use
   # arithmetic expressions in SELECT clauses.
+  Movie
+    .select("yr/10 * 10 AS decade")
+    .group("yr/10")
+    .order("AVG(score) DESC")
+    .limit(1)
+    .first.decade
+
   
 end
 
 def costars(name)
   # List the names of the actors that the named actor has ever appeared with.
   # Hint: use a subquery
+Actor
+  .select("actors.name")
+  .joins(:movies)
+  .where.not("actors.name = ?", name)
+  # .where.not("actors.name = ?","Lauren Bacall")
+  .where("movies.title IN (?)",
+  #this returns movie titles
+Movie
+    .select("movies.title")
+    .where("actors.name = ?", name)
+    .joins(:actors)
+    .pluck("movies.title")
+  )
+  .distinct
+  .pluck("actors.name")
+
+  
   
 end
 
 def actor_out_of_work
   # Find the number of actors in the database who have not appeared in a movie.
+  Actor
+  .select('COUNT(*) as count')
+   .left_outer_joins(:movies)
+   .where('castings.ord IS NULL')
+   .first.count
+   
+  
+
   
 end
 

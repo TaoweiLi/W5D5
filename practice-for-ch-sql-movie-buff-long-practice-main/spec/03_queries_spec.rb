@@ -108,6 +108,7 @@ describe 'costars' do
 			'Walter Brennan',
 			'Walter Gotell',
 			'Walter Huston'
+			
 		)
 	end
 
